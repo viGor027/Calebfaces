@@ -55,7 +55,7 @@ def get_gen(imgs_path):
     return gen
 
 
-x_shape = (218, 178, 3)
+x_shape = (224, 224, 3)
 y_shape = (1,)
 w_shape = (1, )
 
