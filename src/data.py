@@ -6,14 +6,14 @@ from sklearn.utils.class_weight import compute_class_weight
 import tensorflow as tf
 
 
-TRAIN_SET_PATH = 'data/train'
-VALID_SET_PATH = 'data/valid'
-TEST_SET_PATH = 'data/test'
+TRAIN_SET_PATH = '../data/train'
+VALID_SET_PATH = '../data/valid'
+TEST_SET_PATH = '../data/test'
 
 CSV_DICT = {
-    TRAIN_SET_PATH: 'data/csv/train_cat.csv',
-    VALID_SET_PATH: 'data/csv/valid_cat.csv',
-    TEST_SET_PATH: 'data/csv/test_cat.csv'
+    TRAIN_SET_PATH: '../data/csv/train_cat.csv',
+    VALID_SET_PATH: '../data/csv/valid_cat.csv',
+    TEST_SET_PATH: '../data/csv/test_cat.csv'
 }
 
 transform_1 = A.Compose([
@@ -56,7 +56,7 @@ def get_gen(imgs_path):
     return gen
 
 
-x_shape = (218, 178, 3)
+x_shape = (224, 224, 3)
 y_shape = (1,)
 w_shape = (1, )
 
@@ -64,7 +64,7 @@ x_type = tf.float32
 y_type = tf.int8
 w_type = tf.float32
 
-batch_size = 128
+batch_size = 256
 
 train_ds = tf.data.Dataset.from_generator(get_gen(TRAIN_SET_PATH), output_signature=(
          tf.TensorSpec(shape=x_shape, dtype=x_type),
