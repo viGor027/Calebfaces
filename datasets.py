@@ -47,9 +47,11 @@ def get_gen(imgs_path):
             img = cv2.imread(imgs_path + '/' + img_fname)
             img_num = int(img_fname[:-4])
             category = csv.loc[csv['img_num'] == img_num, 'Bald'].reset_index(drop=True).iloc[0]
-            for transformation in TRANSFORMATIONS:
-                transformed = transformation(image=img)['image']
-                yield transformed, (category, ), (class_weights[category], )
+            if imgs_path == TRAIN_SET_PATH:
+                for transformation in TRANSFORMATIONS:
+                    transformed = transformation(image=img)['image']
+                    yield transformed, (category, ), (class_weights[category], )
+            yield img, (category,), (class_weights[category],)
     return gen
 
 
