@@ -1,5 +1,5 @@
 import tensorflow as tf
-from data import x_shape
+from data import x_shape, train_ds, val_ds
 
 
 base_model = tf.keras.applications.ConvNeXtTiny(weights='imagenet', include_top=False, input_shape=x_shape)
@@ -14,4 +14,17 @@ new_output = tf.keras.layers.Dense(1, activation='sigmoid')(new_output)
 
 model = tf.keras.models.Model(inputs=base_model.input, outputs=new_output)
 
-model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+tensorboard_callback = tf.keras.callbacks.TensorBoard('tensorboard/')
+es = tf.keras.callbacks.EarlyStopping(patience=3)
+
+metrics = [
+    tf.keras.metrics.Accuracy(name='accuracy'),
+    tf.keras.metrics.FalseNegatives(name='FN'),
+    tf.keras.metrics.FalsePositives(name='FP'),
+    tf.keras.metrics.TrueNegatives(name='TN'),
+    tf.keras.metrics.TruePositives(name='TP')
+]
+
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=metrics)
+
+model.fit(train_ds, validation_data=val_ds, callbacks=[es, tensorboard_callback], epochs=200)
