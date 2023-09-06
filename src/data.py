@@ -6,14 +6,14 @@ from sklearn.utils.class_weight import compute_class_weight
 import tensorflow as tf
 
 
-TRAIN_SET_PATH = 'data/train'
-VALID_SET_PATH = 'data/valid'
-TEST_SET_PATH = 'data/test'
+TRAIN_SET_PATH = '../data/train'
+VALID_SET_PATH = '../data/valid'
+TEST_SET_PATH = '../data/test'
 
 CSV_DICT = {
-    TRAIN_SET_PATH: 'data/csv/train_cat.csv',
-    VALID_SET_PATH: 'data/csv/valid_cat.csv',
-    TEST_SET_PATH: 'data/csv/test_cat.csv'
+    TRAIN_SET_PATH: '../data/csv/train_cat.csv',
+    VALID_SET_PATH: '../data/csv/valid_cat.csv',
+    TEST_SET_PATH: '../data/csv/test_cat.csv'
 }
 
 transform_1 = A.Compose([
@@ -45,6 +45,7 @@ def get_gen(imgs_path):
     def gen():
         for img_fname in os.listdir(imgs_path):
             img = cv2.imread(imgs_path + '/' + img_fname)
+            img = cv2.resize(img, (224, 224))
             img_num = int(img_fname[:-4])
             category = csv.loc[csv['img_num'] == img_num, 'Bald'].reset_index(drop=True).iloc[0]
             if imgs_path == TRAIN_SET_PATH:
@@ -63,7 +64,7 @@ x_type = tf.float32
 y_type = tf.int8
 w_type = tf.float32
 
-batch_size = 128
+batch_size = 256
 
 train_ds = tf.data.Dataset.from_generator(get_gen(TRAIN_SET_PATH), output_signature=(
          tf.TensorSpec(shape=x_shape, dtype=x_type),
