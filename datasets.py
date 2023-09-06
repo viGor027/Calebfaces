@@ -45,6 +45,7 @@ def get_gen(imgs_path):
     def gen():
         for img_fname in os.listdir(imgs_path):
             img = cv2.imread(imgs_path + '/' + img_fname)
+            img = cv2.resize(img, (224, 224))
             img_num = int(img_fname[:-4])
             category = csv.loc[csv['img_num'] == img_num, 'Bald'].reset_index(drop=True).iloc[0]
             if imgs_path == TRAIN_SET_PATH:
