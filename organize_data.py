@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 import shutil
-from collections import Counter
+
 
 base_images_dir = 'data/img_align_celeba/'
 
@@ -15,10 +15,11 @@ except FileExistsError:
 
 data = pd.read_csv('data/csv/list_attr_celeba.csv')
 
-category = data['Bald']
-category = category.apply(lambda x: 0 if x == -1 else 1)
 
-y_train, y_valid, y_test = category.iloc[:162770], category.iloc[162770:182637], category.iloc[182637:]
+category = data[['image_id', 'Bald']]
+category['Bald'] = category['Bald'].apply(lambda x: 0 if x == -1 else 1)
+
+df_train, df_valid, df_test = category.iloc[:162770], category.iloc[162770:182637], category.iloc[182637:]
 
 
 for img in os.listdir('data/img_align_celeba'):
@@ -29,10 +30,6 @@ for img in os.listdir('data/img_align_celeba'):
     else:
         shutil.move(base_images_dir + img, 'data/test')
 
-y_train = y_train.reset_index().rename(columns={'index': 'img_num'})
-y_valid = y_valid.reset_index().rename(columns={'index': 'img_num'})
-y_test = y_test.reset_index().rename(columns={'index': 'img_num'})
-
-y_train.to_csv('data/csv/train_cat.csv')
-y_valid.to_csv('data/csv/valid_cat.csv')
-y_test.to_csv('data/csv/test_cat.csv')
+df_train.to_csv('data/csv/train_cat.csv', index=False)
+df_valid.to_csv('data/csv/valid_cat.csv', index=False)
+df_test.to_csv('data/csv/test_cat.csv', index=False)
