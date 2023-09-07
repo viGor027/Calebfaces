@@ -39,13 +39,14 @@ y_train = pd.read_csv(CSV_DICT[TRAIN_SET_PATH])
 classes = [0, 1]
 class_weights = compute_class_weight(class_weight='balanced', classes=classes, y=y_train["Bald"])
 
+
 def get_gen(imgs_path):
     def gen():
         df = pd.read_csv(CSV_DICT[imgs_path])
         class_col = df['Bald'].tolist()
         img_fnames = df['image_id'].tolist()
         for img_fname, category in zip(img_fnames, class_col):
-            file_path = os.path.join(TRAIN_SET_PATH, img_fname)
+            file_path = os.path.join(imgs_path, img_fname)
             if not os.path.exists(file_path):
                 continue
             img = cv2.imread(file_path)
