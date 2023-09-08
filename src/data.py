@@ -4,6 +4,7 @@ import cv2
 import albumentations as A
 from sklearn.utils.class_weight import compute_class_weight
 import tensorflow as tf
+from imblearn.under_sampling import RandomUnderSampler
 
 TRAIN_SET_PATH = '../data/train'
 VALID_SET_PATH = '../data/valid'
@@ -40,11 +41,16 @@ classes = [0, 1]
 class_weights = compute_class_weight(class_weight='balanced', classes=classes, y=y_train["Bald"])
 
 
-def get_gen(imgs_path):
+def get_gen(imgs_path, undersample):
     def gen():
         df = pd.read_csv(CSV_DICT[imgs_path])
-        class_col = df['Bald'].tolist()
-        img_fnames = df['image_id'].tolist()
+        class_col = df['Bald']
+        img_fnames = df[['image_id']]
+        if undersample:
+            rus = RandomUnderSampler(random_state=0)
+            img_fnames, class_col = rus.fit_resample(img_fnames, class_col)
+        class_col = class_col.tolist()
+        img_fnames = img_fnames['image_id'].tolist()
         for img_fname, category in zip(img_fnames, class_col):
             file_path = os.path.join(imgs_path, img_fname)
             if not os.path.exists(file_path):
@@ -56,18 +62,26 @@ def get_gen(imgs_path):
     return gen
 
 
-def gen_train():
-    df = pd.read_csv(CSV_DICT[TRAIN_SET_PATH])
-    class_col = df['Bald'].tolist()
-    img_fnames = df['image_id'].tolist()
-    for img_fname, category in zip(img_fnames, class_col):
-        file_path = os.path.join(TRAIN_SET_PATH, img_fname)
-        if not os.path.exists(file_path):
-            continue
-        img = cv2.imread(file_path)
-        img = cv2.resize(img, x_shape[:2])
-        transformed = transform(image=img)['image']
-        yield transformed, (category,), (class_weights[category],)
+def get_gen_train(undersample):
+    def gen_train():
+        df = pd.read_csv(CSV_DICT[TRAIN_SET_PATH])
+        class_col = df['Bald']
+        img_fnames = df[['image_id']]
+        if undersample:
+            rus = RandomUnderSampler(random_state=0)
+            img_fnames, class_col = rus.fit_resample(img_fnames, class_col)
+        class_col = class_col.tolist()
+        img_fnames = img_fnames['image_id'].tolist()
+        for img_fname, category in zip(img_fnames, class_col):
+            file_path = os.path.join(TRAIN_SET_PATH, img_fname)
+            if not os.path.exists(file_path):
+                continue
+            img = cv2.imread(file_path)
+            img = cv2.resize(img, x_shape[:2])
+            transformed = transform(image=img)['image']
+            yield transformed, (category,), (class_weights[category],)
+
+    return gen_train
 
 
 x_shape = (224, 224, 3)
@@ -78,26 +92,29 @@ x_type = tf.float32
 y_type = tf.int8
 w_type = tf.float32
 
-batch_size = 256
+batch_size = 128
 
-train_ds = tf.data.Dataset.from_generator(gen_train, output_signature=(
+train_ds = tf.data.Dataset.from_generator(get_gen_train(True), output_signature=(
     tf.TensorSpec(shape=x_shape, dtype=x_type),
     tf.TensorSpec(shape=y_shape, dtype=y_type),
     tf.TensorSpec(shape=w_shape, dtype=w_type)))
 
 train_ds = train_ds.shuffle(1000)
 train_ds = train_ds.batch(batch_size)
+train_ds = train_ds.prefetch(tf.data.AUTOTUNE)
 
-val_ds = tf.data.Dataset.from_generator(get_gen(VALID_SET_PATH), output_signature=(
+val_ds = tf.data.Dataset.from_generator(get_gen(VALID_SET_PATH, True), output_signature=(
     tf.TensorSpec(shape=x_shape, dtype=x_type),
     tf.TensorSpec(shape=y_shape, dtype=y_type),
     tf.TensorSpec(shape=w_shape, dtype=w_type)))
 
 val_ds = val_ds.batch(batch_size)
+val_ds = val_ds.prefetch(tf.data.AUTOTUNE)
 
-test_ds = tf.data.Dataset.from_generator(get_gen(TEST_SET_PATH), output_signature=(
+test_ds = tf.data.Dataset.from_generator(get_gen(TEST_SET_PATH, False), output_signature=(
     tf.TensorSpec(shape=x_shape, dtype=x_type),
     tf.TensorSpec(shape=y_shape, dtype=y_type),
     tf.TensorSpec(shape=w_shape, dtype=w_type)))
 
 test_ds = test_ds.batch(batch_size)
+test_ds = test_ds.prefetch(tf.data.AUTOTUNE)

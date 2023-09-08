@@ -2,8 +2,16 @@ import pandas as pd
 import cv2
 import albumentations as A
 from collections import Counter
+from imblearn.under_sampling import RandomUnderSampler
 
-img = cv2.imread('../data/train/000001.jpg')
-print(img.shape)
-img = cv2.resize(img, (224, 224))
-print(img.shape)
+df_train = pd.read_csv('../data/csv/train_cat.csv')
+print(df_train.dtypes)
+
+rus = RandomUnderSampler(random_state=0)
+
+X_train, y_train = rus.fit_resample(df_train[['image_id']], df_train['Bald'])
+
+print(X_train.head().tolist())
+
+print(Counter(df_train['Bald']))
+print(Counter(y_train))

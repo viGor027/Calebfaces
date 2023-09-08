@@ -27,6 +27,6 @@ metrics = [
 
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=metrics)
 
-# model.fit(train_ds, validation_data=val_ds, callbacks=[es, tensorboard_callback], epochs=200)
-# model.save('model.keras')
-# model.save('model.h5')
+model.fit(train_ds, validation_data=val_ds, callbacks=[es, tensorboard_callback], epochs=200)
+model.save('model.keras')
+model.save('model.h5')
