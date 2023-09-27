@@ -1,10 +1,11 @@
 import os
+import numpy as np
 import pandas as pd
 import cv2
 import albumentations as A
-from sklearn.utils.class_weight import compute_class_weight
 import tensorflow as tf
-from imblearn.under_sampling import RandomUnderSampler
+from sklearn.model_selection import train_test_split
+
 
 TRAIN_SET_PATH = '../data/train'
 VALID_SET_PATH = '../data/valid'
@@ -37,18 +38,20 @@ TRANSFORMATIONS = [transform_1, transform_2, transform_3]
 transform = A.OneOf(TRANSFORMATIONS, p=0.5)
 
 y_train = pd.read_csv(CSV_DICT[TRAIN_SET_PATH])
-classes = [0, 1]
-class_weights = compute_class_weight(class_weight='balanced', classes=classes, y=y_train["Bald"])
+CLASSES = [0, 1]
+class_weights = np.array([0.51167192, 10.731 / 10])
 
 
-def get_gen(imgs_path, undersample):
+def get_gen(imgs_path, less_samples):
     def gen():
         df = pd.read_csv(CSV_DICT[imgs_path])
         class_col = df['Bald']
         img_fnames = df[['image_id']]
-        if undersample:
-            rus = RandomUnderSampler(random_state=0)
-            img_fnames, class_col = rus.fit_resample(img_fnames, class_col)
+        if less_samples:
+            img_fnames, _, class_col, _ = train_test_split(img_fnames, class_col,
+                                                           train_size=batch_size*2,
+                                                           random_state=0,
+                                                           stratify=class_col)
         class_col = class_col.tolist()
         img_fnames = img_fnames['image_id'].tolist()
         for img_fname, category in zip(img_fnames, class_col):
@@ -62,14 +65,16 @@ def get_gen(imgs_path, undersample):
     return gen
 
 
-def get_gen_train(undersample):
+def get_gen_train(less_samples):
     def gen_train():
         df = pd.read_csv(CSV_DICT[TRAIN_SET_PATH])
         class_col = df['Bald']
         img_fnames = df[['image_id']]
-        if undersample:
-            rus = RandomUnderSampler(random_state=0)
-            img_fnames, class_col = rus.fit_resample(img_fnames, class_col)
+        if less_samples:
+            img_fnames, _, class_col, _ = train_test_split(img_fnames, class_col,
+                                                           train_size=batch_size * 1500,
+                                                           random_state=0,
+                                                           stratify=class_col)
         class_col = class_col.tolist()
         img_fnames = img_fnames['image_id'].tolist()
         for img_fname, category in zip(img_fnames, class_col):
@@ -89,21 +94,21 @@ y_shape = (1,)
 w_shape = (1,)
 
 x_type = tf.float32
-y_type = tf.int8
+y_type = tf.float32
 w_type = tf.float32
 
-batch_size = 128
+batch_size = 64
 
-train_ds = tf.data.Dataset.from_generator(get_gen_train(True), output_signature=(
+train_ds = tf.data.Dataset.from_generator(get_gen_train(False), output_signature=(
     tf.TensorSpec(shape=x_shape, dtype=x_type),
     tf.TensorSpec(shape=y_shape, dtype=y_type),
     tf.TensorSpec(shape=w_shape, dtype=w_type)))
 
-train_ds = train_ds.shuffle(1000)
+train_ds = train_ds.shuffle(1_000)
 train_ds = train_ds.batch(batch_size)
 train_ds = train_ds.prefetch(tf.data.AUTOTUNE)
 
-val_ds = tf.data.Dataset.from_generator(get_gen(VALID_SET_PATH, True), output_signature=(
+val_ds = tf.data.Dataset.from_generator(get_gen(VALID_SET_PATH, False), output_signature=(
     tf.TensorSpec(shape=x_shape, dtype=x_type),
     tf.TensorSpec(shape=y_shape, dtype=y_type),
     tf.TensorSpec(shape=w_shape, dtype=w_type)))

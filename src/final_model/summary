@@ -1,0 +1,6 @@
+less_samples: {train_ds: False, val_ds: False}
+Weights: {0: 0.51167192, 1: 10.731 / 10}
+learning_rate=(0.001 / 8)
+
+Evalutaion output (less_samples of test_ds: False ):
+    312/312 - 5695s 18s/step - loss: 0.0239 - accuracy: 0.0000e+00 - FN: 93.0000 - FP: 198.0000 - TN: 19341.0000 - TP: 330.0000

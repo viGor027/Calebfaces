@@ -1,3 +1,6 @@
 data
 venv
 .idea
+model.h5
+model.keras
+model_versions

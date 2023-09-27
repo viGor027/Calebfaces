@@ -9,13 +9,16 @@ for layer in base_model.layers:
 
 new_output = base_model.output
 new_output = tf.keras.layers.Flatten()(new_output)
-new_output = tf.keras.layers.Dense(200, activation='relu')(new_output)
+new_output = tf.keras.layers.Dense(64, activation='relu')(new_output)
+new_output = tf.keras.layers.Dropout(0.3)(new_output)
+# new_output = tf.keras.layers.Dense(150, activation='relu')(new_output)
+# new_output = tf.keras.layers.Dropout(0.3)(new_output)
 new_output = tf.keras.layers.Dense(1, activation='sigmoid')(new_output)
 
 model = tf.keras.models.Model(inputs=base_model.input, outputs=new_output)
 
 tensorboard_callback = tf.keras.callbacks.TensorBoard('tensorboard/')
-es = tf.keras.callbacks.EarlyStopping(patience=3)
+es = tf.keras.callbacks.EarlyStopping(patience=1, restore_best_weights=True)
 
 metrics = [
     tf.keras.metrics.Accuracy(name='accuracy'),
@@ -25,8 +28,10 @@ metrics = [
     tf.keras.metrics.TruePositives(name='TP')
 ]
 
-model.compile(loss='binary_crossentropy', optimizer='adam', metrics=metrics)
+adam = tf.keras.optimizers.Adam(learning_rate=(0.001 / 12))  # default learning rate divided by 12
 
-model.fit(train_ds, validation_data=val_ds, callbacks=[es, tensorboard_callback], epochs=200)
+model.compile(loss='binary_crossentropy', optimizer=adam, metrics=metrics, weighted_metrics=[])
+
+model.fit(train_ds, validation_data=val_ds, callbacks=[tensorboard_callback, es], epochs=200)
 model.save('model.keras')
 model.save('model.h5')
