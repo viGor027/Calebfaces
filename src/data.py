@@ -1,45 +1,12 @@
 import os
-import numpy as np
 import pandas as pd
 import cv2
-import albumentations as A
 import tensorflow as tf
+import albumentations as A
 from sklearn.model_selection import train_test_split
-
-
-TRAIN_SET_PATH = '../data/train'
-VALID_SET_PATH = '../data/valid'
-TEST_SET_PATH = '../data/test'
-
-CSV_DICT = {
-    TRAIN_SET_PATH: '../data/csv/train_cat.csv',
-    VALID_SET_PATH: '../data/csv/valid_cat.csv',
-    TEST_SET_PATH: '../data/csv/test_cat.csv'
-}
-
-transform_1 = A.Compose([
-    A.RandomBrightnessContrast(p=0.5),
-    A.GridDistortion(p=0.5),
-    A.HueSaturationValue(p=0.5)
-])
-
-transform_2 = A.Compose([
-    A.Perspective(p=0.5),
-    A.RGBShift(p=1)
-])
-
-transform_3 = A.Compose([
-    A.PiecewiseAffine(p=1),
-    A.CLAHE(p=0.5)
-])
-
-TRANSFORMATIONS = [transform_1, transform_2, transform_3]
+from src.constants import CSV_DICT, CLASS_WEIGHTS, TRAIN_SET_PATH, VALID_SET_PATH, TEST_SET_PATH, TRANSFORMATIONS
 
 transform = A.OneOf(TRANSFORMATIONS, p=0.5)
-
-y_train = pd.read_csv(CSV_DICT[TRAIN_SET_PATH])
-CLASSES = [0, 1]
-class_weights = np.array([0.51167192, 10.731 / 10])
 
 
 def get_gen(imgs_path, less_samples):
@@ -60,7 +27,7 @@ def get_gen(imgs_path, less_samples):
                 continue
             img = cv2.imread(file_path)
             img = cv2.resize(img, x_shape[:2])
-            yield img, (category,), (class_weights[category],)
+            yield img, (category,), (CLASS_WEIGHTS[category],)
 
     return gen
 
@@ -84,7 +51,7 @@ def get_gen_train(less_samples):
             img = cv2.imread(file_path)
             img = cv2.resize(img, x_shape[:2])
             transformed = transform(image=img)['image']
-            yield transformed, (category,), (class_weights[category],)
+            yield transformed, (category,), (CLASS_WEIGHTS[category],)
 
     return gen_train
 
