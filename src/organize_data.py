@@ -5,9 +5,6 @@ from src.constants import TRAIN_SET_PATH, VALID_SET_PATH, TEST_SET_PATH, CSV_PAT
 
 
 base_images_dir = os.path.join(d, 'data', 'img_align_celeba')
-print(base_images_dir)
-print(os.path.dirname(base_images_dir))
-print(CSV_PATH)
 
 try:
     os.mkdir(TRAIN_SET_PATH)
