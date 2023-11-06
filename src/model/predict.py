@@ -1,6 +1,6 @@
-from data import test_ds, CSV_DICT, TEST_SET_PATH
+from src.data import test_ds, CSV_DICT, TEST_SET_PATH
 import tensorflow as tf
-from layer_scale import LayerScale
+from src.custom_objects.layer_scale import LayerScale
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 import pandas as pd

@@ -1,4 +1,5 @@
 import albumentations as A
+import cv2
 import numpy as np
 import os
 
@@ -15,20 +16,23 @@ CSV_DICT = {
 }
 
 transform_1 = A.Compose([
-    A.RandomBrightnessContrast(p=0.5),
-    A.GridDistortion(p=0.5),
-    A.HueSaturationValue(p=0.5)
+    A.RandomBrightnessContrast(p=0.5)
 ])
 
 transform_2 = A.Compose([
-    A.Perspective(p=0.5),
-    A.RGBShift(p=1)
+    A.RGBShift(p=0.5)
 ])
 
 transform_3 = A.Compose([
-    A.PiecewiseAffine(p=1),
-    A.CLAHE(p=0.5)
+    A.HueSaturationValue(p=0.5)
 ])
+
+# img = cv2.imread('../data/test/182637.jpg')
+# cv2.imshow('', img)
+# cv2.waitKey(0)
+# img = transform_3(image=img)['image']
+# cv2.imshow('', img)
+# cv2.waitKey(0)
 
 TRANSFORMATIONS = [transform_1, transform_2, transform_3]
 

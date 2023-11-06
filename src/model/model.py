@@ -9,8 +9,8 @@ for layer in base_model.layers:
 
 new_output = base_model.output
 new_output = tf.keras.layers.Flatten()(new_output)
-new_output = tf.keras.layers.Dense(64, activation='relu')(new_output)
-new_output = tf.keras.layers.Dropout(0.3)(new_output)
+new_output = tf.keras.layers.Dense(8, activation='relu')(new_output)
+new_output = tf.keras.layers.BatchNormalization()(new_output)
 new_output = tf.keras.layers.Dense(1, activation='sigmoid')(new_output)
 
 model = tf.keras.models.Model(inputs=base_model.input, outputs=new_output)
