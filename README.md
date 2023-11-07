@@ -26,7 +26,7 @@ then the learning rate was adjusted. The whole hyperparameters adjusting took ab
 1 - bald  
 0 - not bald  
 
-![confusion matrix](https://i.ibb.co/7JqSHHZ/confusion-matrix.png)
+![confusion matrix](https://i.ibb.co/S3jBjSL/confusion-matrix-05-THR.png)
 
 # Conclusion
 
