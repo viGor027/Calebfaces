@@ -44,7 +44,7 @@ First in the directory of cloned repo install all required libraries via:
 
 ```pip install -r requirements.txt```
 
-Due to high number of packages required using virtual environment is recommended.
+Due to high number of required packages using virtual environment is recommended.
 
 Then download the dataset, and unpack it into ```data``` folder so your folder structure looks in the following way:
 
