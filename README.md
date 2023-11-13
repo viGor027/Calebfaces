@@ -1,8 +1,9 @@
 # Overview
 
-Idea of the project was to build a model capable of recognizing bald people
-on the photos - for more challenging task the most imbalanced feature was selected,
-and practice general process of making model.
+The objective of the project was:  
+1) to build a model capable of recognizing bald people in the photos,
+2) for me to develop competencies of building such model, for which reason I selected the most imbalanced feature.
+
 
 ![feature balance chart](https://i.ibb.co/mS715SW/10-most-imbalanced-attributes.png)
 
@@ -16,10 +17,10 @@ and practice general process of making model.
 
 ## Process
 
-To speed up the process the backbone of ConvNeXtTiny network was used, with its weights already adjusted to imagenet dataset.
-At first, I was searching for optimal class weights, training the network
-on a smaller dataset with stratifying by feature we want to predict, manually changing weights,
-then the learning rate was adjusted. The whole hyperparameters adjusting took about training thirteen models.
+To speed up the process I used the backbone of ConvNeXtTiny, with its weights already adjusted to imagenet dataset.
+Initially, I explored class weights by training the network
+on a smaller dataset with stratifying by feature we want to predict, manually adjusting weights.
+Subsequently, I selected optimal learning rate using custom callback. The entire hyperparameter tuning process involved training thirteen models.
 
 # Results
 
@@ -43,8 +44,12 @@ First in the directory of cloned repo install all required libraries via:
 
 ```pip install -r requirements.txt```
 
-Then download the dataset, and unpack it into ```data``` folder so your folder structure looks as follows:
+Due to high number of packages required using virtual environment is recommended.
+
+Then download the dataset, and unpack it into ```data``` folder so your folder structure looks in the following way:
 
 ![structure](https://i.ibb.co/XSDTB1z/struktura.png)  
+
+Images from the dataset should be unpacked directly to ```img_align_celeba``` (```images here``` is there just to point exact location - it is not a folder)
 
 Next step is to run ```organize_data.py``` - it will organize images for you, finally you can train the model running ```train.py```
