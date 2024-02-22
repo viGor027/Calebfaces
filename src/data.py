@@ -5,14 +5,32 @@ import tensorflow as tf
 import albumentations as A
 from sklearn.model_selection import train_test_split
 from imblearn.over_sampling import RandomOverSampler
-from collections import Counter
 from src.constants import CSV_DICT, CLASS_WEIGHTS, TRAIN_SET_PATH, VALID_SET_PATH, TEST_SET_PATH, TRANSFORMATIONS
+from typing import Tuple, Callable
+import numpy as np
 
 transform = A.OneOf(TRANSFORMATIONS, p=0.5)
 
 
-def get_gen(imgs_path, less_samples):
-    def gen():
+def get_gen(imgs_path: str, less_samples: bool) -> Callable[[], Tuple[np.ndarray, Tuple[int], Tuple[float]]]:
+    """
+        Generate batches of images and corresponding labels from the specified dataset.
+
+        Args:
+            imgs_path (str): Path to the directory containing the images.
+            less_samples (bool): If True, reduce the number of samples in the dataset.
+
+        Returns:
+            Callable: A generator function that yields batches of images, labels, and class weights.
+
+        """
+    def gen() -> Tuple[np.ndarray, Tuple[int], Tuple[float]]:
+        """
+        Generator function for creating batches of images and labels.
+
+        Yields:
+            Tuple[np.ndarray, Tuple[int], Tuple[float]]: A tuple containing the image, label, and class weight.
+        """
         df = pd.read_csv(CSV_DICT[imgs_path])
         class_col = df['Bald']
         img_fnames = df[['image_id']]
@@ -34,8 +52,29 @@ def get_gen(imgs_path, less_samples):
     return gen
 
 
-def get_gen_train(less_samples, oversample):
-    def gen_train():
+def get_gen_train(less_samples: bool, oversample: bool) -> Callable[[], Tuple[np.ndarray, Tuple[int], Tuple[float]]]:
+    """
+    Generate batches of training images and corresponding labels from the specified dataset.
+
+    Args:
+        less_samples (bool): If True, reduce the number of samples in the dataset.
+        oversample (bool): If True, oversample the dataset to balance class distribution.
+
+    Returns:
+        Callable: A generator function that yields batches of transformed images, labels, and class weights.
+
+    """
+    def gen_train() -> Tuple[np.ndarray, Tuple[int], Tuple[float]]:
+        """
+        Generator function for creating batches of transformed training images and labels.
+
+        Yields:
+            Tuple[np.ndarray,
+                  Tuple[int],
+                  Tuple[float]
+                 ]: A tuple containing the transformed image, label, and class weight.
+
+        """
         df = pd.read_csv(CSV_DICT[TRAIN_SET_PATH])
         class_col = df['Bald']
         img_fnames = df[['image_id']]
@@ -49,7 +88,6 @@ def get_gen_train(less_samples, oversample):
             img_fnames, class_col = over.fit_resample(img_fnames, class_col)
 
         class_col = class_col.tolist()
-        print("Gen, class col counter: ", Counter(class_col))
         img_fnames = img_fnames['image_id'].tolist()
         for img_fname, category in zip(img_fnames, class_col):
             file_path = os.path.join(TRAIN_SET_PATH, img_fname)

@@ -1,3 +1,29 @@
+"""
+Data Preparation Script
+
+This script organizes the CelebA dataset into training, validation, and test sets.
+It also creates corresponding CSV files containing image filenames and corresponding labels.
+
+Directories:
+- `TRAIN_SET_PATH`: Training set directory
+- `VALID_SET_PATH`: Validation set directory
+- `TEST_SET_PATH`: Test set directory
+- `CSV_PATH`: Directory for CSV files
+
+CSV Files:
+- `list_attr_celeba.csv`: Original attribute file
+- `train_cat.csv`: CSV file for training set
+- `valid_cat.csv`: CSV file for validation set
+- `test_cat.csv`: CSV file for test set
+
+Usage:
+1. Organizes images into training, validation, and test sets based on their index.
+2. Creates CSV files for each set with image filenames and corresponding labels.
+
+Note:
+The attribute 'Bald' is used as a label, where '0' represents 'Not Bald' and '1' represents 'Bald'.
+"""
+
 import pandas as pd
 import os
 import shutil

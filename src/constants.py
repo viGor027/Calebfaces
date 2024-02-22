@@ -1,5 +1,4 @@
 import albumentations as A
-import cv2
 import numpy as np
 import os
 
@@ -26,13 +25,6 @@ transform_2 = A.Compose([
 transform_3 = A.Compose([
     A.HueSaturationValue(p=0.5)
 ])
-
-# img = cv2.imread('../data/test/182637.jpg')
-# cv2.imshow('', img)
-# cv2.waitKey(0)
-# img = transform_3(image=img)['image']
-# cv2.imshow('', img)
-# cv2.waitKey(0)
 
 TRANSFORMATIONS = [transform_1, transform_2, transform_3]
 

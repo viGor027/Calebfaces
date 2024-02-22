@@ -1,3 +1,5 @@
+"""Script used for finding optimal learning rate."""
+
 from src.model.model import model
 from src.custom_objects.lr_callback import LearningRateLossSave
 from src.data import train_ds
