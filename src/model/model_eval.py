@@ -1,3 +1,5 @@
+"""Script used for evaluation of a model"""
+
 from src.data import test_ds
 import tensorflow as tf
 from src.custom_objects.layer_scale import LayerScale
