@@ -26,14 +26,18 @@ import tensorflow as tf
 from src.data import x_shape
 
 
-base_model = tf.keras.applications.ConvNeXtTiny(weights='imagenet', include_top=False, input_shape=x_shape)
+# base_model = tf.keras.applications.ConvNeXtTiny(weights='imagenet', include_top=False, input_shape=x_shape)
+base_model = tf.keras.applications.EfficientNetB4(weights='imagenet', include_top=False, input_shape=x_shape)
 
 for layer in base_model.layers:
     layer.trainable = False
 
+prelu = tf.keras.layers.PReLU()
+
 new_output = base_model.output
 new_output = tf.keras.layers.Flatten()(new_output)
-new_output = tf.keras.layers.Dense(8, activation='relu')(new_output)
+new_output = tf.keras.layers.BatchNormalization()(new_output)
+new_output = tf.keras.layers.Dense(2, activation=prelu, kernel_initializer="he_normal")(new_output)
 new_output = tf.keras.layers.BatchNormalization()(new_output)
 new_output = tf.keras.layers.Dense(1, activation='sigmoid')(new_output)
 

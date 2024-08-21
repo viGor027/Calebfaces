@@ -36,7 +36,7 @@ def get_gen(imgs_path: str, less_samples: bool) -> Callable[[], Tuple[np.ndarray
         img_fnames = df[['image_id']]
         if less_samples:
             img_fnames, _, class_col, _ = train_test_split(img_fnames, class_col,
-                                                           train_size=batch_size*2,
+                                                           train_size=batch_size*250,
                                                            random_state=0,
                                                            stratify=class_col)
         class_col = class_col.tolist()
@@ -81,7 +81,7 @@ def get_gen_train(less_samples: bool, oversample: bool) -> Callable[[], Tuple[np
         if less_samples and not oversample:
             img_fnames, _, class_col, _ = train_test_split(img_fnames, class_col,
                                                            train_size=batch_size * 1500,
-                                                           random_state=0,
+                                                           random_state=42,
                                                            stratify=class_col)
         if oversample:
             over = RandomOverSampler(random_state=0)
@@ -96,7 +96,7 @@ def get_gen_train(less_samples: bool, oversample: bool) -> Callable[[], Tuple[np
             img = cv2.imread(file_path)
             img = cv2.resize(img, x_shape[:2])
             transformed = transform(image=img)['image']
-            yield transformed, (category,), (CLASS_WEIGHTS[category],)
+            yield img, (category,), (CLASS_WEIGHTS[category],)
 
     return gen_train
 
@@ -111,7 +111,7 @@ w_type = tf.float32
 
 batch_size = 64
 
-train_ds = tf.data.Dataset.from_generator(get_gen_train(False, False), output_signature=(
+train_ds = tf.data.Dataset.from_generator(get_gen_train(True, False), output_signature=(
     tf.TensorSpec(shape=x_shape, dtype=x_type),
     tf.TensorSpec(shape=y_shape, dtype=y_type),
     tf.TensorSpec(shape=w_shape, dtype=w_type)))
