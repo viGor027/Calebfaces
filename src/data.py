@@ -37,7 +37,7 @@ def get_gen(imgs_path: str, less_samples: bool) -> Callable[[], Tuple[np.ndarray
         if less_samples:
             img_fnames, _, class_col, _ = train_test_split(img_fnames, class_col,
                                                            train_size=batch_size*250,
-                                                           random_state=0,
+                                                           random_state=1,
                                                            stratify=class_col)
         class_col = class_col.tolist()
         img_fnames = img_fnames['image_id'].tolist()
@@ -81,7 +81,7 @@ def get_gen_train(less_samples: bool, oversample: bool) -> Callable[[], Tuple[np
         if less_samples and not oversample:
             img_fnames, _, class_col, _ = train_test_split(img_fnames, class_col,
                                                            train_size=batch_size * 1500,
-                                                           random_state=42,
+                                                           random_state=27,
                                                            stratify=class_col)
         if oversample:
             over = RandomOverSampler(random_state=0)
