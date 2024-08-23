@@ -20,7 +20,10 @@ The objective of the project was:
 To speed up the process I used the backbone of ConvNeXtTiny, with its weights already adjusted to imagenet dataset.
 Initially, I explored class weights by training the network
 on a smaller dataset with stratifying by feature we want to predict, manually adjusting weights.
-Subsequently, I selected optimal learning rate using custom callback. The entire hyperparameter tuning process involved training thirteen models.
+Subsequently, I selected optimal learning rate using custom callback. I experimented with various classifiers
+and decided to continue training with the most promising one; I made some of the top layers of the backbone trainable and continued training
+using another custom callback to schedule a learning rate of the model in the span of an epoch
+(due to one epoch taking excessively long time I decided to train a backbone for only one epoch for each part of it that was made trainable; see ```continue_training.py```). 
 
 # Results
 
@@ -32,7 +35,8 @@ Subsequently, I selected optimal learning rate using custom callback. The entire
 # Conclusion
 
 Looking at the confusion matrix we can clearly see that model requires further tweaking,
-however in home environment(insufficient computing power) optimal hyperparameters cannot be found in reasonable time span.
+however in home environment with insufficient computing power finding optimal hyperparameters
+and conducting training is not possible in a reasonable time.
 
 ## Dataset link
 
