@@ -27,7 +27,7 @@ Subsequently, I selected optimal learning rate using custom callback. The entire
 1 - bald  
 0 - not bald  
 
-![confusion matrix](https://i.ibb.co/S3jBjSL/confusion-matrix-05-THR.png)
+![confusion matrix](https://i.ibb.co/1QYN4T1/confusion-matrix-best-continued-2.png)
 
 # Conclusion
 

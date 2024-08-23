@@ -10,17 +10,17 @@ from datetime import datetime
 now = datetime.now()
 date_time = now.strftime("%m_%d_%Y_%H_%M_%S")
 
-model = tf.keras.models.load_model('../../model_versions/best_model_so_far_10/model.keras',
+model = tf.keras.models.load_model('../../tensorboard/best_model_continued_2/model.keras',
                                    custom_objects={'LayerScale': LayerScale})
 
 lrls = LearningRateLossSave(q=1.08)
 
 nadam = tf.keras.optimizers.Nadam(learning_rate=(0.001 / 10))
 
-for layer in model.layers[:-40]:
+for layer in model.layers[:-60]:
     layer.trainable = False
 
-for layer in model.layers[-40:]:
+for layer in model.layers[-60:]:
     layer.trainable = True
 
 

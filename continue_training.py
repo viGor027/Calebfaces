@@ -13,14 +13,14 @@ metrics = [
     tf.keras.metrics.Recall(name='recall')
 ]
 
-tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir="tensorboard/best_model_continued_2",
+tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir="tensorboard/best_model_continued_3",
                                                       update_freq='batch')
 
 nadam = tf.keras.optimizers.Nadam(learning_rate=0.002 / 100)
 
-scheduler = LearningRateSchedule(initial_lr=0.002 / 100, target_lr=0.001, n_batches=1500)
+scheduler = LearningRateSchedule(initial_lr=0.002 / 100, target_lr=0.002 / 10, n_batches=2544)
 
-model = tf.keras.models.load_model('tensorboard/best_model_continued/model.keras',
+model = tf.keras.models.load_model('tensorboard/best_model_continued_2/model.keras',
                                    custom_objects={'LayerScale': LayerScale})
 
 """Unfreeze #1"""

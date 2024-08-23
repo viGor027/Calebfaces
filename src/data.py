@@ -111,7 +111,7 @@ w_type = tf.float32
 
 batch_size = 64
 
-train_ds = tf.data.Dataset.from_generator(get_gen_train(True, False), output_signature=(
+train_ds = tf.data.Dataset.from_generator(get_gen_train(False, False), output_signature=(
     tf.TensorSpec(shape=x_shape, dtype=x_type),
     tf.TensorSpec(shape=y_shape, dtype=y_type),
     tf.TensorSpec(shape=w_shape, dtype=w_type)))
